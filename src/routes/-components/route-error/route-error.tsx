@@ -1,18 +1,21 @@
-import { Link } from '@/shared/ui/link'
+import { Link } from '@tanstack/react-router'
+
+import { Button } from '@/shared/ui/button'
+import { TypographyH1, TypographyP } from '@/shared/ui/typography'
 
 type Props = {
   error: Error
 }
 
-export function RouteError({ error }: Props) {
+export function CustomError({ error }: Props) {
   console.error(error)
   return (
-    <div className="my-4">
-      <div className="mb-4 text-4xl font-bold">Oops!</div>
-      <div className="mb-8 text-xl font-medium">Something went wrong</div>
-      <Link to="/" color="primary" variant="contained" size="small">
-        Go to home
-      </Link>
+    <div className="flex h-full w-full flex-col items-center justify-center">
+      <TypographyH1>Oops!</TypographyH1>
+      <TypographyP className="mb-4">Something went wrong</TypographyP>
+      <Button className="mb-12" asChild>
+        <Link to="/">Go to home</Link>
+      </Button>
     </div>
   )
 }

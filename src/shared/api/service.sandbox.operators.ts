@@ -1,10 +1,10 @@
 import { queryOptions } from '@tanstack/react-query'
 import * as z from 'zod'
 
-import { paginationSchema } from '@/shared/constants'
 import { fetcher } from '@/shared/fetcher/instance'
 import { stringifySearch } from '@/shared/lib/utils'
 
+import { paginationSchema } from './schema'
 import { createApiResponseSchema } from './utils'
 
 export const OperatorPayloadSchema = z.object({

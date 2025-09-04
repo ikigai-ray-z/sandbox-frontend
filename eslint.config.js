@@ -113,6 +113,13 @@ export default ts.config([
   },
   reactHooks.configs['recommended-latest'],
   reactRefresh.configs.vite,
+  {
+    name: 'shared-ui-react-refresh-override',
+    files: ['src/shared/ui/**/*.{ts,tsx}'],
+    rules: {
+      'react-refresh/only-export-components': 'off',
+    },
+  },
   router.configs['flat/recommended'],
   query.configs['flat/recommended'],
   // Test

@@ -1,25 +1,26 @@
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
+import { Suspense } from 'react'
 
-import { AuthLayout } from '@/routes/-components/auth-layout'
-import { store } from '@/shared/store/instance'
-import { authTokenAtom } from '@/features/auth/atoms'
-import { Loading } from '@/routes/-components/loading'
+import { AuthLayout } from '@/routes/_auth/-components/auth-layout'
+import { checkIsAuthorized } from '@/features/auth'
+import { RoutePending } from '@/routes/-components/route-loading'
 
 export const Route = createFileRoute('/_auth')({
   beforeLoad: async () => {
-    const authToken = store.get(authTokenAtom)
-    if (!authToken) {
-      throw redirect({ to: '/', replace: true })
+    const isAuthorized = checkIsAuthorized()
+    if (!isAuthorized) {
+      throw redirect({ to: '/sign-in', replace: true })
     }
   },
   component: RouteComponent,
-  pendingComponent: Loading,
 })
 
 function RouteComponent() {
   return (
     <AuthLayout>
-      <Outlet />
+      <Suspense fallback={<RoutePending />}>
+        <Outlet />
+      </Suspense>
     </AuthLayout>
   )
 }

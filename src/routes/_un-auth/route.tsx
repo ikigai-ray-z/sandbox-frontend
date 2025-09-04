@@ -1,12 +1,11 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
 
-import { store } from '@/shared/store/instance'
-import { authTokenAtom } from '@/features/auth/atoms'
+import { checkIsAuthorized } from '@/features/auth'
 
 export const Route = createFileRoute('/_un-auth')({
   beforeLoad: async () => {
-    const authToken = store.get(authTokenAtom)
-    if (authToken) {
+    const isAuthorized = checkIsAuthorized()
+    if (isAuthorized) {
       throw redirect({ to: '/', replace: true })
     }
   },

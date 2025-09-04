@@ -6,13 +6,10 @@ import {
   type GridPaginationModel,
   type GridRowModel,
 } from '@mui/x-data-grid'
-import { Badge, Button, Divider, IconButton, InputBase } from '@mui/material'
-import AddIcon from '@mui/icons-material/Add'
-import FilterListIcon from '@mui/icons-material/FilterList'
-import SearchTwoToneIcon from '@mui/icons-material/SearchTwoTone'
 import { useEffect, useState } from 'react'
 import EditIcon from '@mui/icons-material/Edit'
 import { useStore } from '@tanstack/react-form'
+import { SearchIcon, SlidersHorizontal } from 'lucide-react'
 
 import {
   getPlayersOptions,
@@ -32,6 +29,8 @@ import { queryClient } from '@/shared/query/instance'
 import { defaultPageSizeOptions } from '@/shared/ui/table/constants'
 import { isSameSearch } from '@/shared/api/utils'
 import { useAppForm } from '@/shared/form/hooks'
+import { Input } from '@/shared/ui/input'
+import { Button } from '@/shared/ui/button'
 
 import { FilterDialog } from './-filter-dialog'
 import { searchFormSchema } from './-schemas'
@@ -186,15 +185,15 @@ function RouteComponent() {
 
   return (
     <>
-      <div className="flex h-full flex-col pb-4">
+      <div data-slot="player-list">
         <div className="mb-4 flex flex-wrap items-center gap-2">
           <Form
-            className="border-divider flex w-100 max-w-full items-center rounded-md border"
+            className="flex w-100 max-w-full items-center gap-2"
             onSubmit={form.handleSubmit}
           >
             <form.Field name="fuzzyId">
               {({ state, handleChange }) => (
-                <InputBase
+                <Input
                   className="grow px-3"
                   placeholder="Player External ID (fuzzy)"
                   value={state.value ?? ''}
@@ -205,23 +204,19 @@ function RouteComponent() {
               )}
             </form.Field>
 
-            <IconButton className="mx-1" type="submit">
-              <SearchTwoToneIcon />
-            </IconButton>
-            <Divider orientation="vertical" flexItem />
-            <IconButton className="mx-1" onClick={() => setIsFilterOpen(true)}>
-              <Badge color="primary" variant="dot" invisible={!hasFilter}>
-                <FilterListIcon className={cn(hasFilter && 'text-primary')} />
-              </Badge>
-            </IconButton>
+            <Button type="submit" size="icon" variant="outline">
+              <SearchIcon />
+            </Button>
+            <Button
+              type="button"
+              size="icon"
+              onClick={() => setIsFilterOpen(true)}
+              variant="outline"
+            >
+              <SlidersHorizontal className={cn(hasFilter && 'text-primary')} />
+            </Button>
           </Form>
-          <Button
-            variant="contained"
-            className="ms-auto"
-            startIcon={<AddIcon />}
-          >
-            Create
-          </Button>
+          <Button className="ms-auto">Create</Button>
         </div>
         <Table
           loading={isFetching}

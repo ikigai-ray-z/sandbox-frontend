@@ -1,4 +1,3 @@
-import { Button } from '@mui/material'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useMutation } from '@tanstack/react-query'
 import { useSetAtom } from 'jotai'
@@ -6,8 +5,10 @@ import { useState } from 'react'
 
 import GoogleIcon from '@/assets/google.webp'
 import { testLoginOptions } from '@/shared/api/test.saml.login'
-import { authTokenAtom } from '@/features/auth/atoms'
-import { loginUrl } from '@/shared/api/login'
+import { authTokenAtom } from '@/features/auth'
+import { loginUrl } from '@/shared/api/exp.saml.login'
+import { Card, CardContent, CardFooter } from '@/shared/ui/card'
+import { Button } from '@/shared/ui/button'
 
 export const Route = createFileRoute('/_un-auth/sign-in')({
   component: RouteComponent,
@@ -28,6 +29,8 @@ function RouteComponent() {
 
   const isLoading = isPending || isRedirecting
 
+  const appVersion = `v ${__APP_VERSION__}`
+
   const handleLogin = () => {
     if (import.meta.env.MODE === 'development') {
       testLogin()
@@ -39,32 +42,34 @@ function RouteComponent() {
   }
 
   return (
-    <div className="bg-background-default flex h-dvh w-dvw items-center justify-center">
-      <div className="bg-background-default flex w-full max-w-md flex-col items-center rounded-xl p-8">
-        <div className="mb-6 flex items-center gap-2">
+    <div className="container flex h-full w-full items-center justify-center">
+      <div className="flex h-full w-full max-w-100 flex-col items-center justify-center gap-6">
+        <div className="flex items-center gap-2">
           <img src="/favicon.svg" alt="logo" className="size-6" />
           <h1 className="text-xl font-bold">Sandbox</h1>
         </div>
-        <h2 className="text-primary text-2xl font-bold">Hi, Welcome back!</h2>
-        <p className="text-text-secondary mb-8 text-sm">
-          Sign in to your IKG account
-        </p>
-        <Button
-          className="capitalize"
-          variant="outlined"
-          size="large"
-          startIcon={
-            <img
-              src={GoogleIcon}
-              alt="google"
-              className="inline-block size-4"
-            />
-          }
-          loading={isLoading}
-          onClick={handleLogin}
-        >
-          Sign in with Google
-        </Button>
+        <Card className="w-full">
+          <CardContent className="flex flex-col items-center justify-center">
+            <h2 className="text-primary mb-2 text-2xl font-semibold">
+              Hi, Welcome back!
+            </h2>
+            <p className="text-muted-foreground mb-8 text-sm">
+              Sign in to your IKG account
+            </p>
+            <Button
+              type="button"
+              size="lg"
+              disabled={isLoading}
+              onClick={handleLogin}
+            >
+              <img src={GoogleIcon} alt="google" className="block size-4" />
+              <span>Sign in with Google</span>
+            </Button>
+          </CardContent>
+          <CardFooter className="flex items-center justify-center">
+            <span className="text-muted-foreground text-xs">{appVersion}</span>
+          </CardFooter>
+        </Card>
       </div>
     </div>
   )

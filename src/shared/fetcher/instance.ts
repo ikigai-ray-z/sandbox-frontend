@@ -1,8 +1,7 @@
 import ky from 'ky'
 
 import { store } from '@/shared/store/instance'
-import { authTokenAtom } from '@/features/auth/atoms'
-import { onSignOut } from '@/features/auth/utils'
+import { authTokenAtom, handleSignOut } from '@/features/auth'
 
 const backApiUrl =
   import.meta.env.MODE === 'development'
@@ -26,7 +25,7 @@ export const fetcher = ky.create({
     afterResponse: [
       (_request, _options, response) => {
         if (response.status === 401) {
-          onSignOut()
+          handleSignOut()
         }
       },
     ],

@@ -1,3 +1,4 @@
+import { ColorSchemeProvider } from './features/color-scheme'
 import { QueryProvider } from './shared/query/provider'
 import { RouterProvider } from './shared/router/provider'
 import { JotaiProvider } from './shared/store/provider'
@@ -7,9 +8,11 @@ export function App() {
   return (
     <>
       <JotaiProvider>
-        <QueryProvider>
-          <RouterProvider />
-        </QueryProvider>
+        <ColorSchemeProvider>
+          <QueryProvider>
+            <RouterProvider />
+          </QueryProvider>
+        </ColorSchemeProvider>
       </JotaiProvider>
       <Toaster />
     </>

@@ -1,10 +1,10 @@
 import { queryOptions } from '@tanstack/react-query'
 import * as z from 'zod'
 
-import { paginationSchema } from '@/shared/constants'
 import { fetcher } from '@/shared/fetcher/instance'
 import { stringifySearch } from '@/shared/lib/utils'
 
+import { paginationSchema } from './schema'
 import { createApiResponseSchema } from './utils'
 
 export const BrandPayloadSchema = z.object({
@@ -47,9 +47,7 @@ const getBrands = async ({
     .then((res) => BrandsResponseSchema.parse(res))
 }
 
-export function getBrandsOptions(
-  payload: BrandPayload = { limit: 200, offset: 0 },
-) {
+export function getBrandsOptions(payload: BrandPayload) {
   return queryOptions({
     queryKey: ['service', 'sandbox', 'brands', payload],
     queryFn: ({ signal }) => getBrands({ payload, signal }),

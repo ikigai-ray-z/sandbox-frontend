@@ -11,7 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UnAuthRouteRouteImport } from './routes/_un-auth/route'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthIndexRouteImport } from './routes/_auth/index'
 import { Route as UnAuthSignInRouteImport } from './routes/_un-auth/sign-in'
 import { Route as AuthPlayerIndexRouteImport } from './routes/_auth/player/index'
 import { Route as AuthOperatorIndexRouteImport } from './routes/_auth/operator/index'
@@ -28,10 +28,10 @@ const AuthRouteRoute = AuthRouteRouteImport.update({
   id: '/_auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
+const AuthIndexRoute = AuthIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthRouteRoute,
 } as any)
 const UnAuthSignInRoute = UnAuthSignInRouteImport.update({
   id: '/sign-in',
@@ -70,8 +70,8 @@ const AuthPlayerShowIdRoute = AuthPlayerShowIdRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
   '/sign-in': typeof UnAuthSignInRoute
+  '/': typeof AuthIndexRoute
   '/operator/create': typeof AuthOperatorCreateRoute
   '/brand': typeof AuthBrandIndexRoute
   '/launch': typeof AuthLaunchIndexRoute
@@ -80,8 +80,8 @@ export interface FileRoutesByFullPath {
   '/player/show/$id': typeof AuthPlayerShowIdRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
   '/sign-in': typeof UnAuthSignInRoute
+  '/': typeof AuthIndexRoute
   '/operator/create': typeof AuthOperatorCreateRoute
   '/brand': typeof AuthBrandIndexRoute
   '/launch': typeof AuthLaunchIndexRoute
@@ -91,10 +91,10 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
   '/_auth': typeof AuthRouteRouteWithChildren
   '/_un-auth': typeof UnAuthRouteRouteWithChildren
   '/_un-auth/sign-in': typeof UnAuthSignInRoute
+  '/_auth/': typeof AuthIndexRoute
   '/_auth/operator/create': typeof AuthOperatorCreateRoute
   '/_auth/brand/': typeof AuthBrandIndexRoute
   '/_auth/launch/': typeof AuthLaunchIndexRoute
@@ -105,8 +105,8 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
     | '/sign-in'
+    | '/'
     | '/operator/create'
     | '/brand'
     | '/launch'
@@ -115,8 +115,8 @@ export interface FileRouteTypes {
     | '/player/show/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
     | '/sign-in'
+    | '/'
     | '/operator/create'
     | '/brand'
     | '/launch'
@@ -125,10 +125,10 @@ export interface FileRouteTypes {
     | '/player/show/$id'
   id:
     | '__root__'
-    | '/'
     | '/_auth'
     | '/_un-auth'
     | '/_un-auth/sign-in'
+    | '/_auth/'
     | '/_auth/operator/create'
     | '/_auth/brand/'
     | '/_auth/launch/'
@@ -138,7 +138,6 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
   UnAuthRouteRoute: typeof UnAuthRouteRouteWithChildren
 }
@@ -159,12 +158,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
+    '/_auth/': {
+      id: '/_auth/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthIndexRouteImport
+      parentRoute: typeof AuthRouteRoute
     }
     '/_un-auth/sign-in': {
       id: '/_un-auth/sign-in'
@@ -219,6 +218,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthRouteRouteChildren {
+  AuthIndexRoute: typeof AuthIndexRoute
   AuthOperatorCreateRoute: typeof AuthOperatorCreateRoute
   AuthBrandIndexRoute: typeof AuthBrandIndexRoute
   AuthLaunchIndexRoute: typeof AuthLaunchIndexRoute
@@ -228,6 +228,7 @@ interface AuthRouteRouteChildren {
 }
 
 const AuthRouteRouteChildren: AuthRouteRouteChildren = {
+  AuthIndexRoute: AuthIndexRoute,
   AuthOperatorCreateRoute: AuthOperatorCreateRoute,
   AuthBrandIndexRoute: AuthBrandIndexRoute,
   AuthLaunchIndexRoute: AuthLaunchIndexRoute,
@@ -253,7 +254,6 @@ const UnAuthRouteRouteWithChildren = UnAuthRouteRoute._addFileChildren(
 )
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
   AuthRouteRoute: AuthRouteRouteWithChildren,
   UnAuthRouteRoute: UnAuthRouteRouteWithChildren,
 }

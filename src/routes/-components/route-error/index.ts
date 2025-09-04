@@ -1,7 +1,5 @@
 import { ErrorComponent } from '@tanstack/react-router'
 
-import { RouteError as CustomErrorComponent } from './route-error'
+import { CustomError } from './route-error'
 
-export const RouteError = import.meta.env.DEV
-  ? ErrorComponent
-  : CustomErrorComponent
+export const RouteError = import.meta.env.DEV ? ErrorComponent : CustomError
