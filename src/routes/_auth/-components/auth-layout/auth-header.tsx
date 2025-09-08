@@ -34,18 +34,13 @@ export function AuthHeader({ className }: { className?: string }) {
       className={cn('bg-background z-10 flex border-b px-4 py-3', className)}
     >
       <div className="flex-1">
-        <Button type="button" size="icon" variant="ghost" asChild>
+        <Button size="icon" variant="ghost" asChild>
           <SidebarTrigger />
         </Button>
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button
-            type="button"
-            size="icon"
-            variant="ghost"
-            className="rounded-full"
-          >
+          <Button size="icon" variant="ghost" className="rounded-full">
             <ColorSchemeIcon />
           </Button>
         </DropdownMenuTrigger>

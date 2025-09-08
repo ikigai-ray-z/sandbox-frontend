@@ -1,29 +1,30 @@
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  Button,
-  DialogActions,
-} from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
-import FilterListIcon from '@mui/icons-material/FilterList'
 import { useStore } from '@tanstack/react-form'
+import { ListFilterIcon } from 'lucide-react'
 
-import { Form } from '@/shared/ui/form'
 import { getBrandsOptions } from '@/shared/api/service.sandbox.brands'
 import { withForm } from '@/shared/form/hooks'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/shared/ui/dialog'
 
 import type { SearchFormType } from './-schemas'
 
 type FilterDialogProps = {
   open: boolean
+  setIsFilterOpen: (open: boolean) => void
 }
 
 export const FilterDialog = withForm({
   defaultValues: {} as SearchFormType,
   props: {} as FilterDialogProps,
-  render: function FilterDialog({ form, open }) {
+  render: function FilterDialog({ form, open, setIsFilterOpen }) {
     const { data: brands, isLoading: isBrandsLoading } = useQuery({
       ...getBrandsOptions({
         limit: 1000,
@@ -39,7 +40,12 @@ export const FilterDialog = withForm({
 
     const operatorOptions = useMemo(() => {
       return brands
-        ? [...new Set(brands.data.list.map((brand) => brand.operatorCode))]
+        ? [...new Set(brands.data.list.map((brand) => brand.operatorCode))].map(
+            (operatorCode) => ({
+              value: operatorCode,
+              label: operatorCode,
+            }),
+          )
         : []
     }, [brands])
 
@@ -62,7 +68,12 @@ export const FilterDialog = withForm({
       const isOperatorCodeSelected =
         Array.isArray(operatorCode) && operatorCode.length > 0
       if (!isOperatorCodeSelected) {
-        return [...new Set(brands.data.list.map((brand) => brand.brandCode))]
+        return [
+          ...new Set(brands.data.list.map((brand) => brand.brandCode)),
+        ].map((brandCode) => ({
+          value: brandCode,
+          label: brandCode,
+        }))
       }
 
       if (typeof brandOptionsMap === 'undefined') {
@@ -73,7 +84,10 @@ export const FilterDialog = withForm({
         return brandOptionsMap[operatorCode] ?? []
       })
 
-      return [...new Set(codes)]
+      return [...new Set(codes)].map((brandCode) => ({
+        value: brandCode,
+        label: brandCode,
+      }))
     }, [brandOptionsMap, brands, operatorCode])
 
     const handleReset = () => {
@@ -82,12 +96,16 @@ export const FilterDialog = withForm({
     }
 
     return (
-      <Dialog open={open} fullWidth closeAfterTransition={false} maxWidth="xs">
-        <DialogTitle className="flex items-center gap-2">
-          <FilterListIcon className="size-6" /> Filter Player
-        </DialogTitle>
-        <DialogContent className="pt-2">
-          <Form className="flex flex-col gap-6" onSubmit={form.handleSubmit}>
+      <Dialog open={open} onOpenChange={setIsFilterOpen}>
+        <DialogContent className="gap-10">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-4">
+              <ListFilterIcon className="size-6" />
+              <span>Filter Player</span>
+            </DialogTitle>
+            <DialogDescription />
+          </DialogHeader>
+          <div className="flex flex-col gap-4">
             <form.AppField name="operatorCode">
               {(field) => (
                 <field.Select
@@ -95,6 +113,7 @@ export const FilterDialog = withForm({
                   multiple
                   loading={isBrandsLoading}
                   options={operatorOptions}
+                  onChange={() => form.setFieldValue('brandCode', undefined)}
                 />
               )}
             </form.AppField>
@@ -108,21 +127,13 @@ export const FilterDialog = withForm({
                 />
               )}
             </form.AppField>
-
-            <DialogActions className="mt-6">
-              <Button
-                variant="outlined"
-                onClick={handleReset}
-                type="button"
-                size="large"
-              >
-                Reset
-              </Button>
-              <Button variant="contained" type="submit" size="large">
-                Save
-              </Button>
-            </DialogActions>
-          </Form>
+          </div>
+          <DialogFooter>
+            <form.AppForm>
+              <form.ResetButton onClick={handleReset}>Reset</form.ResetButton>
+              <form.SubmitButton>Save</form.SubmitButton>
+            </form.AppForm>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     )

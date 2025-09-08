@@ -113,14 +113,13 @@ export function AuthSidebar({ className }: { className?: string }) {
                 </p>
                 <div className="flex items-center justify-end gap-2">
                   <Button
-                    type="button"
                     variant="outline"
                     size="sm"
                     onClick={() => setIsSignOutOpen(false)}
                   >
                     Cancel
                   </Button>
-                  <Button type="button" size="sm" onClick={handleSignOut}>
+                  <Button size="sm" onClick={handleSignOut}>
                     Confirm
                   </Button>
                 </div>

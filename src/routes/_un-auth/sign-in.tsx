@@ -56,12 +56,7 @@ function RouteComponent() {
             <p className="text-muted-foreground mb-8 text-sm">
               Sign in to your IKG account
             </p>
-            <Button
-              type="button"
-              size="lg"
-              disabled={isLoading}
-              onClick={handleLogin}
-            >
+            <Button size="lg" disabled={isLoading} onClick={handleLogin}>
               <img src={GoogleIcon} alt="google" className="block size-4" />
               <span>Sign in with Google</span>
             </Button>

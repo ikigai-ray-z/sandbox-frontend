@@ -9,28 +9,25 @@ import {
 import { useEffect, useState } from 'react'
 import EditIcon from '@mui/icons-material/Edit'
 import { useStore } from '@tanstack/react-form'
-import { SearchIcon, SlidersHorizontal } from 'lucide-react'
+import {
+  ListFilterIcon,
+  ListFilterPlusIcon,
+  PlusIcon,
+  SearchIcon,
+} from 'lucide-react'
 
 import {
   getPlayersOptions,
   playerPayloadSchema,
   playersQueryKey,
 } from '@/shared/api/service.sandbox.players'
-import {
-  convertToMuiPagination,
-  Table,
-  getPaginationChange,
-} from '@/shared/ui/table'
-import { Form } from '@/shared/ui/form'
-import { cn, omitEmptyValues } from '@/shared/lib/utils'
-import { DeleteAction } from '@/shared/ui/table/delete-action'
-import { ShowAction } from '@/shared/ui/table/show-action'
+import { omitEmptyValues } from '@/shared/lib/utils'
 import { queryClient } from '@/shared/query/instance'
-import { defaultPageSizeOptions } from '@/shared/ui/table/constants'
 import { isSameSearch } from '@/shared/api/utils'
 import { useAppForm } from '@/shared/form/hooks'
 import { Input } from '@/shared/ui/input'
 import { Button } from '@/shared/ui/button'
+import { PageHeading } from '@/shared/ui/page'
 
 import { FilterDialog } from './-filter-dialog'
 import { searchFormSchema } from './-schemas'
@@ -61,7 +58,8 @@ function RouteComponent() {
   const form = useAppForm({
     defaultValues: searchForm,
     validators: {
-      onChange: searchFormSchema,
+      onBlur: searchFormSchema,
+      onSubmit: searchFormSchema,
     },
     onSubmit: (data) => {
       setIsFilterOpen(false)
@@ -186,49 +184,54 @@ function RouteComponent() {
   return (
     <>
       <div data-slot="player-list">
+        <PageHeading className="flex items-center justify-between gap-2">
+          Player
+          <Button>
+            Create
+            <PlusIcon />
+          </Button>
+        </PageHeading>
         <div className="mb-4 flex flex-wrap items-center gap-2">
-          <Form
-            className="flex w-100 max-w-full items-center gap-2"
-            onSubmit={form.handleSubmit}
-          >
-            <form.Field name="fuzzyId">
-              {({ state, handleChange }) => (
-                <Input
-                  className="grow px-3"
-                  placeholder="Player External ID (fuzzy)"
-                  value={state.value ?? ''}
-                  onChange={(e) => {
-                    handleChange(e.target.value)
-                  }}
-                />
-              )}
-            </form.Field>
+          <form.AppForm>
+            <div className="flex w-100 max-w-full items-center gap-2">
+              <Button
+                size="icon"
+                variant="outline"
+                onClick={() => setIsFilterOpen(true)}
+              >
+                {hasFilter ? <ListFilterPlusIcon /> : <ListFilterIcon />}
+              </Button>
+              <form.Field name="fuzzyId">
+                {({ state, handleChange }) => (
+                  <Input
+                    className="grow px-3"
+                    placeholder="Player External ID (fuzzy)"
+                    value={state.value ?? ''}
+                    onChange={(e) => {
+                      handleChange(e.target.value)
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        form.handleSubmit()
+                      }
+                    }}
+                    tabIndex={0}
+                  />
+                )}
+              </form.Field>
 
-            <Button type="submit" size="icon" variant="outline">
-              <SearchIcon />
-            </Button>
-            <Button
-              type="button"
-              size="icon"
-              onClick={() => setIsFilterOpen(true)}
-              variant="outline"
-            >
-              <SlidersHorizontal className={cn(hasFilter && 'text-primary')} />
-            </Button>
-          </Form>
-          <Button className="ms-auto">Create</Button>
+              <form.SubmitButton size="icon" variant="outline">
+                <SearchIcon />
+              </form.SubmitButton>
+              <FilterDialog
+                form={form}
+                open={isFilterOpen}
+                setIsFilterOpen={setIsFilterOpen}
+              />
+            </div>
+          </form.AppForm>
         </div>
-        <Table
-          loading={isFetching}
-          rows={rows}
-          columns={columns}
-          pageSizeOptions={defaultPageSizeOptions}
-          paginationModel={paginationModel}
-          rowCount={players?.data.totalCount}
-          onPaginationModelChange={onPaginationModelChange}
-        />
       </div>
-      <FilterDialog open={isFilterOpen} form={form} />
     </>
   )
 }
