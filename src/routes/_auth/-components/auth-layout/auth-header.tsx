@@ -31,7 +31,10 @@ export function AuthHeader({ className }: { className?: string }) {
 
   return (
     <header
-      className={cn('bg-background z-10 flex border-b px-4 py-3', className)}
+      className={cn(
+        'bg-background/90 z-10 flex border-b px-4 py-3 backdrop-blur-xs',
+        className,
+      )}
     >
       <div className="flex-1">
         <Button size="icon" variant="ghost" asChild>

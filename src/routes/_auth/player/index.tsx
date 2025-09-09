@@ -1,20 +1,17 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import {
-  GridActionsCellItem,
-  type GridColDef,
-  type GridPaginationModel,
-  type GridRowModel,
-} from '@mui/x-data-grid'
 import { useEffect, useState } from 'react'
-import EditIcon from '@mui/icons-material/Edit'
 import { useStore } from '@tanstack/react-form'
 import {
+  EyeIcon,
   ListFilterIcon,
   ListFilterPlusIcon,
   PlusIcon,
   SearchIcon,
+  SquarePenIcon,
+  TrashIcon,
 } from 'lucide-react'
+import { type ColumnDef } from '@tanstack/react-table'
 
 import {
   getPlayersOptions,
@@ -28,6 +25,8 @@ import { useAppForm } from '@/shared/form/hooks'
 import { Input } from '@/shared/ui/input'
 import { Button } from '@/shared/ui/button'
 import { PageHeading } from '@/shared/ui/page'
+import { DataTable } from '@/shared/ui/data-table/data-table'
+import { usePlayerListPagination } from '@/shared/ui/data-table/use-pagination'
 
 import { FilterDialog } from './-filter-dialog'
 import { searchFormSchema } from './-schemas'
@@ -99,139 +98,129 @@ function RouteComponent() {
   }, [form.state.errors])
 
   // Table
-  const columns: GridColDef[] = [
+  const columns: ColumnDef<
+    NonNullable<typeof players>['data']['list'][number]
+  >[] = [
     {
-      field: 'playerExternalId',
-      headerName: 'Player External ID',
-      minWidth: 160,
-      flex: 1,
+      accessorKey: 'playerExternalId',
+      header: 'Player External ID',
     },
     {
-      field: 'balance',
-      headerName: 'Balance',
-      minWidth: 160,
-      flex: 1,
+      accessorKey: 'balance',
+      header: 'Balance',
     },
     {
-      field: 'currency',
-      headerName: 'Currency',
-      minWidth: 160,
-      flex: 1,
+      accessorKey: 'currency',
+      header: 'Currency',
     },
     {
-      field: 'operatorCode',
-      headerName: 'Operator Code',
-      minWidth: 160,
-      flex: 1,
+      accessorKey: 'operatorCode',
+      header: 'Operator Code',
     },
     {
-      field: 'brandCode',
-      headerName: 'Brand Code',
-      minWidth: 160,
-      flex: 1,
+      accessorKey: 'brandCode',
+      header: 'Brand Code',
     },
     {
-      field: 'actions',
-      type: 'actions',
-      headerName: 'Actions',
-      width: 140,
-      getActions: (params) => [
-        <ShowAction
-          key={params.id}
-          onClick={() => {
-            navigate({
-              to: `/player/show/${params.row.playerExternalId}`,
-            })
-          }}
-        />,
-        <GridActionsCellItem
-          key={params.id}
-          icon={<EditIcon />}
-          label="Edit"
-          onClick={() => {}}
-        />,
-        <DeleteAction key={params.id} onClick={() => {}} />,
-      ],
+      accessorKey: 'actions',
+      header: 'Actions',
+      cell: ({ row }) => {
+        return (
+          <div>
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={() => {
+                navigate({
+                  to: `/player/show/${row.original.playerExternalId}`,
+                })
+              }}
+            >
+              <EyeIcon />
+            </Button>
+            <Button size="icon" variant="ghost">
+              <SquarePenIcon />
+            </Button>
+            <Button size="icon" variant="ghost">
+              <TrashIcon />
+            </Button>
+          </div>
+        )
+      },
     },
   ]
 
-  const rows: GridRowModel[] =
-    players?.data.list.map((item) => ({
-      id: item.playerExternalId,
-      playerExternalId: item.playerExternalId,
-      balance: item.balance,
-      currency: item.lastCurrency,
-      operatorCode: item.operatorCode,
-      brandCode: item.brandCode,
-    })) ?? []
-
   // Pagination
-  const paginationModel = convertToMuiPagination({ offset, limit })
-  const onPaginationModelChange = (model: GridPaginationModel) => {
-    const newValue = getPaginationChange({
-      model,
-      limit,
-      offset,
-    })
-
-    if (newValue) {
+  const { pagination, onPaginationChange } = usePlayerListPagination({
+    limit,
+    offset,
+    onChange: (newPagination) =>
       navigate({
-        search: newValue,
-      })
-    }
-  }
+        search: {
+          ...searchForm,
+          offset: newPagination.pageIndex,
+          limit: newPagination.pageSize,
+        },
+      }),
+  })
 
   return (
-    <>
-      <div data-slot="player-list">
-        <PageHeading className="flex items-center justify-between gap-2">
-          Player
-          <Button>
-            Create
-            <PlusIcon />
-          </Button>
-        </PageHeading>
-        <div className="mb-4 flex flex-wrap items-center gap-2">
-          <form.AppForm>
-            <div className="flex w-100 max-w-full items-center gap-2">
-              <Button
-                size="icon"
-                variant="outline"
-                onClick={() => setIsFilterOpen(true)}
-              >
-                {hasFilter ? <ListFilterPlusIcon /> : <ListFilterIcon />}
-              </Button>
-              <form.Field name="fuzzyId">
-                {({ state, handleChange }) => (
-                  <Input
-                    className="grow px-3"
-                    placeholder="Player External ID (fuzzy)"
-                    value={state.value ?? ''}
-                    onChange={(e) => {
-                      handleChange(e.target.value)
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        form.handleSubmit()
-                      }
-                    }}
-                    tabIndex={0}
-                  />
-                )}
-              </form.Field>
+    <div data-slot="player-list">
+      <PageHeading className="flex items-center justify-between gap-2">
+        Player
+        <Button>
+          Create
+          <PlusIcon />
+        </Button>
+      </PageHeading>
+      <div className="mb-4 flex flex-wrap items-center gap-2">
+        <form.AppForm>
+          <div className="flex w-100 max-w-full items-center gap-2">
+            <Button
+              size="icon"
+              variant="outline"
+              onClick={() => setIsFilterOpen(true)}
+            >
+              {hasFilter ? <ListFilterPlusIcon /> : <ListFilterIcon />}
+            </Button>
+            <form.Field name="fuzzyId">
+              {({ state, handleChange }) => (
+                <Input
+                  className="grow px-3"
+                  placeholder="Player External ID (fuzzy)"
+                  value={state.value ?? ''}
+                  onChange={(e) => {
+                    handleChange(e.target.value)
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      form.handleSubmit()
+                    }
+                  }}
+                  tabIndex={0}
+                />
+              )}
+            </form.Field>
 
-              <form.SubmitButton size="icon" variant="outline">
-                <SearchIcon />
-              </form.SubmitButton>
-              <FilterDialog
-                form={form}
-                open={isFilterOpen}
-                setIsFilterOpen={setIsFilterOpen}
-              />
-            </div>
-          </form.AppForm>
-        </div>
+            <form.SubmitButton size="icon" variant="outline">
+              <SearchIcon />
+            </form.SubmitButton>
+            <FilterDialog
+              form={form}
+              open={isFilterOpen}
+              setIsFilterOpen={setIsFilterOpen}
+            />
+          </div>
+        </form.AppForm>
       </div>
-    </>
+      <DataTable
+        loading={isFetching}
+        columns={columns}
+        data={players?.data.list}
+        rowCount={players?.data.totalCount ?? 0}
+        pagination={pagination}
+        onPaginationChange={onPaginationChange}
+      />
+    </div>
   )
 }

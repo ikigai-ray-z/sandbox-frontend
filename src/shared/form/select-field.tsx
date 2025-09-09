@@ -122,8 +122,9 @@ export function SelectField({
                     onClick={onClearClick}
                     onKeyDown={onClearKeyDown}
                     tabIndex={0}
+                    className="group"
                   >
-                    <XIcon className="size-4 shrink-0 opacity-50" />
+                    <XIcon className="size-4 shrink-0 opacity-50 group-hover:opacity-100" />
                   </div>
                 )}
                 <ChevronDownIcon className="size-4 shrink-0 opacity-50" />

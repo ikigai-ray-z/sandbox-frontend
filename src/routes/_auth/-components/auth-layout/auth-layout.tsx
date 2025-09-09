@@ -5,12 +5,10 @@ import { AuthHeader } from './auth-header'
 
 export function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <SidebarProvider className="grid h-full w-full grid-cols-[auto_1fr] grid-rows-[auto_1fr]">
+    <SidebarProvider className="grid h-full w-full grid-cols-[auto_1fr] grid-rows-[auto_1fr] overflow-y-auto">
       <AuthSidebar className="col-start-1" />
       <AuthHeader className="sticky top-0 col-start-2" />
-      <main className="col-start-2 container min-h-0 overflow-y-auto py-4">
-        {children}
-      </main>
+      <main className="relative col-start-2 container py-8">{children}</main>
     </SidebarProvider>
   )
 }
