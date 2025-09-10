@@ -1,5 +1,5 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { useStore } from '@tanstack/react-form'
 import {
@@ -25,8 +25,7 @@ import { useAppForm } from '@/shared/form/hooks'
 import { Input } from '@/shared/ui/input'
 import { Button } from '@/shared/ui/button'
 import { PageHeading } from '@/shared/ui/page'
-import { DataTable } from '@/shared/ui/data-table/data-table'
-import { usePlayerListPagination } from '@/shared/ui/data-table/use-pagination'
+import { DataTable, usePagination } from '@/shared/ui/data-table'
 
 import { FilterDialog } from './-filter-dialog'
 import { searchFormSchema } from './-schemas'
@@ -38,7 +37,7 @@ export const Route = createFileRoute('/_auth/player/')({
 
 function RouteComponent() {
   const { limit, offset, ...searchForm } = Route.useSearch()
-  const navigate = useNavigate({ from: Route.fullPath })
+  const navigate = Route.useNavigate()
 
   // Dialog
   const [isFilterOpen, setIsFilterOpen] = useState(false)
@@ -98,12 +97,14 @@ function RouteComponent() {
   }, [form.state.errors])
 
   // Table
+  const isTableLoading = isFetching
   const columns: ColumnDef<
     NonNullable<typeof players>['data']['list'][number]
   >[] = [
     {
       accessorKey: 'playerExternalId',
       header: 'Player External ID',
+      size: 360,
     },
     {
       accessorKey: 'balance',
@@ -124,6 +125,7 @@ function RouteComponent() {
     {
       accessorKey: 'actions',
       header: 'Actions',
+      maxSize: 130,
       cell: ({ row }) => {
         return (
           <div>
@@ -151,7 +153,7 @@ function RouteComponent() {
   ]
 
   // Pagination
-  const { pagination, onPaginationChange } = usePlayerListPagination({
+  const { pagination, onPaginationChange } = usePagination({
     limit,
     offset,
     onChange: (newPagination) =>
@@ -165,7 +167,7 @@ function RouteComponent() {
   })
 
   return (
-    <div data-slot="player-list">
+    <div data-slot="player-list" className="flex h-full flex-col">
       <PageHeading className="flex items-center justify-between gap-2">
         Player
         <Button>
@@ -214,7 +216,8 @@ function RouteComponent() {
         </form.AppForm>
       </div>
       <DataTable
-        loading={isFetching}
+        className="h-0 grow overflow-y-auto"
+        loading={isTableLoading}
         columns={columns}
         data={players?.data.list}
         rowCount={players?.data.totalCount ?? 0}

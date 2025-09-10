@@ -32,7 +32,7 @@ export function AuthHeader({ className }: { className?: string }) {
   return (
     <header
       className={cn(
-        'bg-background/90 z-10 flex border-b px-4 py-3 backdrop-blur-xs',
+        'bg-background/90 z-20 flex border-b px-4 py-3 backdrop-blur-xs',
         className,
       )}
     >

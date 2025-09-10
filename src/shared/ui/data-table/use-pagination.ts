@@ -1,29 +1,37 @@
 import type { OnChangeFn, PaginationState } from '@tanstack/react-table'
+import * as z from 'zod'
+import { useCallback, useMemo } from 'react'
 
-import { convertApiParamsToPagination } from '@/shared/ui/data-table/utils'
+import { paginationSchema } from '@/shared/api/schema'
 
-export function usePlayerListPagination({
+import { convertApiParamsToPagination } from './utils'
+
+export function usePagination({
   limit,
   offset,
   onChange,
-}: {
-  limit: number
-  offset: number
+}: z.infer<typeof paginationSchema> & {
   onChange: (pagination: PaginationState) => void
 }): {
   pagination: PaginationState
   onPaginationChange: OnChangeFn<PaginationState>
 } {
-  const pagination = convertApiParamsToPagination({ limit, offset })
+  const pagination = useMemo(
+    () => convertApiParamsToPagination({ limit, offset }),
+    [limit, offset],
+  )
 
-  const onPaginationChange: OnChangeFn<PaginationState> = (updaterOrValue) => {
-    const newPagination =
-      typeof updaterOrValue === 'function'
-        ? updaterOrValue(pagination)
-        : updaterOrValue
+  const onPaginationChange: OnChangeFn<PaginationState> = useCallback(
+    (updaterOrValue) => {
+      const newPagination =
+        typeof updaterOrValue === 'function'
+          ? updaterOrValue(pagination)
+          : updaterOrValue
 
-    onChange(newPagination)
-  }
+      onChange(newPagination)
+    },
+    [pagination, onChange],
+  )
 
   return { pagination, onPaginationChange }
 }

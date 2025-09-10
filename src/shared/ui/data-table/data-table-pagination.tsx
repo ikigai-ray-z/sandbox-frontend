@@ -49,8 +49,8 @@ export function DataTablePagination<T>({
           {getRowSelectionText()}
         </div>
       )}
-      <div className="ms-auto flex items-center gap-6 lg:gap-8">
-        <div className="flex items-center gap-2">
+      <div className="ms-auto flex flex-col flex-wrap items-center justify-center gap-x-6 gap-y-2 @lg:flex-row @lg:gap-x-8">
+        <div className="flex flex-wrap items-center gap-2">
           <p className="text-sm">Rows per page</p>
           <Select
             value={`${table.getState().pagination.pageSize}`}
@@ -58,7 +58,7 @@ export function DataTablePagination<T>({
               table.setPageSize(Number(value))
             }}
           >
-            <SelectTrigger className="h-8">
+            <SelectTrigger className="bg-background h-8">
               <SelectValue placeholder={table.getState().pagination.pageSize} />
             </SelectTrigger>
             <SelectContent side="top">
@@ -73,7 +73,7 @@ export function DataTablePagination<T>({
         <div className="flex items-center justify-center text-sm">
           {getItemsText()}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Button
             variant="outline"
             size="icon"

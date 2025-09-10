@@ -1,12 +1,37 @@
+import * as z from 'zod'
+import type { Column } from '@tanstack/react-table'
+import type { CSSProperties } from 'react'
+
+import { paginationSchema } from '@/shared/api/schema'
+
 export const convertApiParamsToPagination = ({
   offset,
   limit,
-}: {
-  offset: number
-  limit: number
-}) => {
+}: z.infer<typeof paginationSchema>) => {
   return {
     pageIndex: offset,
     pageSize: limit,
+  }
+}
+
+export const getPinningStyles = <T>(column: Column<T>): CSSProperties => {
+  const isPinned = column.getIsPinned()
+  const isLastLeftPinnedColumn =
+    isPinned === 'left' && column.getIsLastColumn('left')
+  const isFirstRightPinnedColumn =
+    isPinned === 'right' && column.getIsFirstColumn('right')
+
+  return {
+    boxShadow: isLastLeftPinnedColumn
+      ? '-5px 0 0 -4px var(--border) inset'
+      : isFirstRightPinnedColumn
+        ? '5px 0 0 -4px var(--border) inset'
+        : undefined,
+    left: isPinned === 'left' ? `${column.getStart('left')}px` : undefined,
+    right: isPinned === 'right' ? `${column.getAfter('right')}px` : undefined,
+    opacity: isPinned ? 0.95 : 1,
+    position: isPinned ? 'sticky' : 'relative',
+    width: column.getSize(),
+    zIndex: isPinned ? 1 : 0,
   }
 }

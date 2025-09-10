@@ -18,8 +18,10 @@ import {
   TableRow,
 } from '@/shared/ui/table'
 import { Skeleton } from '@/shared/ui/skeleton'
+import { cn } from '@/shared/lib/utils'
 
 import { DataTablePagination } from './data-table-pagination'
+import { getPinningStyles } from './utils'
 
 /**
  * fallback data MUST have a "stable" reference
@@ -28,6 +30,7 @@ import { DataTablePagination } from './data-table-pagination'
 const fallbackData: never[] = []
 
 interface DataTableProps<TData, TValue> {
+  className?: string
   loading: boolean
   columns: ColumnDef<TData, TValue>[]
   data: TData[] | undefined
@@ -37,6 +40,7 @@ interface DataTableProps<TData, TValue> {
 }
 
 export function DataTable<TData, TValue>({
+  className,
   loading,
   columns,
   data,
@@ -62,75 +66,86 @@ export function DataTable<TData, TValue>({
     onPaginationChange,
   })
 
+  const fixIconScreenOnly = 'relative'
+
   return (
     <div
       data-slot="data-table"
-      className="flex flex-col gap-2 rounded-md border"
+      className={cn(
+        'flex flex-col rounded-md border',
+        fixIconScreenOnly,
+        className,
+      )}
     >
-      <div className="relative">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </TableHead>
-                  )
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {loading && table.getRowModel().rows.length === 0 ? (
-              Array.from({ length: pagination.pageSize }).map((_, rowIdx) => (
-                <TableRow key={`skeleton-row-${rowIdx}`}>
-                  {Array.from({ length: columns.length }).map((_, colIdx) => (
-                    <TableCell key={`skeleton-cell-${rowIdx}-${colIdx}`}>
-                      <Skeleton className="h-4 w-full" />
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  {loading ? 'Loading...' : 'No results.'}
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-        {loading && (
-          <div className="bg-background/80 absolute inset-0 z-10 backdrop-blur-xs" />
+      <Table
+        className={cn(
+          'grow transition-opacity',
+          loading ? 'pointer-events-none opacity-50' : 'opacity-100',
         )}
-      </div>
-      <DataTablePagination table={table} className="border-t py-3" />
+      >
+        <TableHeader className="bg-secondary sticky top-0 z-10 shadow-[inset_0_-1px_var(--border)]">
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => {
+                return (
+                  <TableHead
+                    key={header.id}
+                    className="bg-secondary"
+                    style={getPinningStyles(header.column)}
+                  >
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
+                  </TableHead>
+                )
+              })}
+            </TableRow>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {loading && table.getRowModel().rows.length === 0 ? (
+            Array.from({ length: pagination.pageSize }).map((_, rowIdx) => (
+              <TableRow key={`skeleton-row-${rowIdx}`}>
+                {Array.from({ length: columns.length }).map((_, colIdx) => (
+                  <TableCell key={`skeleton-cell-${rowIdx}-${colIdx}`}>
+                    <Skeleton className="h-5 w-full" />
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))
+          ) : table.getRowModel().rows?.length ? (
+            table.getRowModel().rows.map((row) => (
+              <TableRow
+                key={row.id}
+                data-state={row.getIsSelected() && 'selected'}
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell
+                    key={cell.id}
+                    className="bg-background"
+                    style={getPinningStyles(cell.column)}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={columns.length} className="h-24 text-center">
+                No results.
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+      <DataTablePagination
+        table={table}
+        className="bg-secondary w-full border-t py-2"
+      />
     </div>
   )
 }
