@@ -5,8 +5,12 @@ import { cn } from '@/shared/lib/utils/index'
 function Table({
   className,
   tableClassName,
+  loading = false,
   ...props
-}: React.ComponentProps<'table'> & { tableClassName?: string }) {
+}: React.ComponentProps<'table'> & {
+  tableClassName?: string
+  loading?: boolean
+}) {
   return (
     <div
       data-slot="table-container"
@@ -19,6 +23,12 @@ function Table({
           tableClassName,
         )}
         {...props}
+      />
+      <div
+        data-state={loading ? 'show' : 'hide'}
+        className={cn(
+          'data-[state=show]:bg-background/50 absolute z-20 transition-colors data-[state=hide]:top-0 data-[state=hide]:left-0 data-[state=show]:inset-0',
+        )}
       />
     </div>
   )

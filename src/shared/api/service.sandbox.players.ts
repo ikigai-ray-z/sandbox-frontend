@@ -8,7 +8,7 @@ import { stringifySearch } from '@/shared/lib/utils'
 import { paginationSchema } from './schema'
 import { createApiResponseSchema } from './utils'
 
-export const playerPayloadSchema = z.object({
+export const playersPayloadSchema = z.object({
   operatorCode: z.string().array().optional(),
   brandCode: z.string().array().optional(),
   playerExternalId: z.string().array().optional(),
@@ -20,7 +20,7 @@ export const playerPayloadSchema = z.object({
   ...paginationSchema.shape,
 })
 
-type PlayerPayload = z.infer<typeof playerPayloadSchema>
+type PlayersPayload = z.infer<typeof playersPayloadSchema>
 
 const playersResponseSchema = createApiResponseSchema(
   z.object({
@@ -50,10 +50,10 @@ const getPlayers = async ({
   payload,
   signal,
 }: {
-  payload: PlayerPayload
+  payload: PlayersPayload
   signal: AbortSignal
 }) => {
-  const parsedPayload = playerPayloadSchema.parse(payload)
+  const parsedPayload = playersPayloadSchema.parse(payload)
   return fetcher('v1/service/sandbox/players', {
     method: 'GET',
     searchParams: stringifySearch(parsedPayload),
@@ -64,7 +64,7 @@ const getPlayers = async ({
 }
 
 export const playersQueryKey = ['service', 'sandbox', 'players']
-export function getPlayersOptions(payload: PlayerPayload) {
+export function getPlayersOptions(payload: PlayersPayload) {
   return queryOptions({
     queryKey: [...playersQueryKey, payload],
     queryFn: ({ signal }) => getPlayers({ payload, signal }),

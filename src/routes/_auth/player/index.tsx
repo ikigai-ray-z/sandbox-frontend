@@ -15,7 +15,7 @@ import { type ColumnDef } from '@tanstack/react-table'
 
 import {
   getPlayersOptions,
-  playerPayloadSchema,
+  playersPayloadSchema,
   playersQueryKey,
 } from '@/shared/api/service.sandbox.players'
 import { omitEmptyValues } from '@/shared/lib/utils'
@@ -24,14 +24,14 @@ import { isSameSearch } from '@/shared/api/utils'
 import { useAppForm } from '@/shared/form/hooks'
 import { Input } from '@/shared/ui/input'
 import { Button } from '@/shared/ui/button'
-import { PageHeading } from '@/shared/ui/page'
+import { Page, PageHeading } from '@/shared/ui/page'
 import { DataTable, usePagination } from '@/shared/ui/data-table'
 
 import { FilterDialog } from './-filter-dialog'
 import { searchFormSchema } from './-schemas'
 
 export const Route = createFileRoute('/_auth/player/')({
-  validateSearch: playerPayloadSchema,
+  validateSearch: playersPayloadSchema,
   component: RouteComponent,
 })
 
@@ -140,7 +140,15 @@ function RouteComponent() {
             >
               <EyeIcon />
             </Button>
-            <Button size="icon" variant="ghost">
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={() => {
+                navigate({
+                  to: `/player/edit/${row.original.playerExternalId}`,
+                })
+              }}
+            >
               <SquarePenIcon />
             </Button>
             <Button size="icon" variant="ghost">
@@ -167,9 +175,9 @@ function RouteComponent() {
   })
 
   return (
-    <div data-slot="player-list" className="flex h-full flex-col">
+    <Page dataSlot="player-list" className="flex h-full flex-col">
       <PageHeading className="flex items-center justify-between gap-2">
-        Player
+        Player List
         <Button>
           Create
           <PlusIcon />
@@ -183,7 +191,11 @@ function RouteComponent() {
               variant="outline"
               onClick={() => setIsFilterOpen(true)}
             >
-              {hasFilter ? <ListFilterPlusIcon /> : <ListFilterIcon />}
+              {hasFilter ? (
+                <ListFilterPlusIcon className="text-primary-foreground" />
+              ) : (
+                <ListFilterIcon />
+              )}
             </Button>
             <form.Field name="fuzzyId">
               {({ state, handleChange }) => (
@@ -224,6 +236,6 @@ function RouteComponent() {
         pagination={pagination}
         onPaginationChange={onPaginationChange}
       />
-    </div>
+    </Page>
   )
 }

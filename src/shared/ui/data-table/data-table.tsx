@@ -77,12 +77,7 @@ export function DataTable<TData, TValue>({
         className,
       )}
     >
-      <Table
-        className={cn(
-          'grow transition-opacity',
-          loading ? 'pointer-events-none opacity-50' : 'opacity-100',
-        )}
-      >
+      <Table className={cn('grow transition-opacity')} loading={loading}>
         <TableHeader className="bg-secondary sticky top-0 z-10 shadow-[inset_0_-1px_var(--border)]">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
@@ -108,9 +103,9 @@ export function DataTable<TData, TValue>({
         <TableBody>
           {loading && table.getRowModel().rows.length === 0 ? (
             Array.from({ length: pagination.pageSize }).map((_, rowIdx) => (
-              <TableRow key={`skeleton-row-${rowIdx}`}>
+              <TableRow key={rowIdx}>
                 {Array.from({ length: columns.length }).map((_, colIdx) => (
-                  <TableCell key={`skeleton-cell-${rowIdx}-${colIdx}`}>
+                  <TableCell key={colIdx}>
                     <Skeleton className="h-5 w-full" />
                   </TableCell>
                 ))}

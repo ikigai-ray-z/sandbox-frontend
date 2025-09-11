@@ -131,6 +131,6 @@
   }
 
   #root {
-    @apply h-dvh w-dvw;
+    @apply @container h-dvh w-dvw;
   }
 }

@@ -9,6 +9,7 @@ import { authTokenAtom } from '@/features/auth'
 import { loginUrl } from '@/shared/api/exp.saml.login'
 import { Card, CardContent, CardFooter } from '@/shared/ui/card'
 import { Button } from '@/shared/ui/button'
+import { Page } from '@/shared/ui/page'
 
 export const Route = createFileRoute('/_un-auth/sign-in')({
   component: RouteComponent,
@@ -42,7 +43,10 @@ function RouteComponent() {
   }
 
   return (
-    <div className="@container flex h-full w-full items-center justify-center px-4">
+    <Page
+      dataSlot="sign-in"
+      className="flex h-full w-full items-center justify-center px-4"
+    >
       <div className="flex h-full w-full max-w-100 flex-col items-center justify-center gap-6">
         <div className="flex items-center gap-2">
           <img src="/favicon.svg" alt="logo" className="size-6" />
@@ -66,6 +70,6 @@ function RouteComponent() {
           </CardFooter>
         </Card>
       </div>
-    </div>
+    </Page>
   )
 }

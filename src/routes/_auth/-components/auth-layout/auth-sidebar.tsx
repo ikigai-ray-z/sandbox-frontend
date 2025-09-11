@@ -22,6 +22,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover'
 import { Button } from '@/shared/ui/button'
 import { handleSignOut } from '@/features/auth'
+import { cn } from '@/shared/lib/utils'
 
 type NavItem = {
   label: string
@@ -54,7 +55,7 @@ export function AuthSidebar({ className }: { className?: string }) {
     },
   ]
   return (
-    <Sidebar collapsible="icon" className={className}>
+    <Sidebar collapsible="icon" className={cn('z-20', className)}>
       <SidebarHeader className="pt-4">
         <SidebarMenu>
           <SidebarMenuItem>
@@ -79,7 +80,7 @@ export function AuthSidebar({ className }: { className?: string }) {
                   <SidebarMenuButton asChild tooltip={item.label}>
                     <Link
                       to={item.to}
-                      className="data-[status=active]:text-sidebar-accent-foreground data-[status=active]:bg-sidebar-accent"
+                      className="data-[status=active]:text-sidebar-accent-foreground data-[status=active]:bg-sidebar-accent py-6"
                     >
                       <item.icon />
                       <span>{item.label}</span>

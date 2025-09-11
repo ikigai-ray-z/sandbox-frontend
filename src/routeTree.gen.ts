@@ -19,6 +19,7 @@ import { Route as AuthLaunchIndexRouteImport } from './routes/_auth/launch/index
 import { Route as AuthBrandIndexRouteImport } from './routes/_auth/brand/index'
 import { Route as AuthOperatorCreateRouteImport } from './routes/_auth/operator/create'
 import { Route as AuthPlayerShowIdRouteImport } from './routes/_auth/player/show.$id'
+import { Route as AuthPlayerEditIdRouteImport } from './routes/_auth/player/edit.$id'
 
 const UnAuthRouteRoute = UnAuthRouteRouteImport.update({
   id: '/_un-auth',
@@ -68,6 +69,11 @@ const AuthPlayerShowIdRoute = AuthPlayerShowIdRouteImport.update({
   path: '/player/show/$id',
   getParentRoute: () => AuthRouteRoute,
 } as any)
+const AuthPlayerEditIdRoute = AuthPlayerEditIdRouteImport.update({
+  id: '/player/edit/$id',
+  path: '/player/edit/$id',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/sign-in': typeof UnAuthSignInRoute
@@ -77,6 +83,7 @@ export interface FileRoutesByFullPath {
   '/launch': typeof AuthLaunchIndexRoute
   '/operator': typeof AuthOperatorIndexRoute
   '/player': typeof AuthPlayerIndexRoute
+  '/player/edit/$id': typeof AuthPlayerEditIdRoute
   '/player/show/$id': typeof AuthPlayerShowIdRoute
 }
 export interface FileRoutesByTo {
@@ -87,6 +94,7 @@ export interface FileRoutesByTo {
   '/launch': typeof AuthLaunchIndexRoute
   '/operator': typeof AuthOperatorIndexRoute
   '/player': typeof AuthPlayerIndexRoute
+  '/player/edit/$id': typeof AuthPlayerEditIdRoute
   '/player/show/$id': typeof AuthPlayerShowIdRoute
 }
 export interface FileRoutesById {
@@ -100,6 +108,7 @@ export interface FileRoutesById {
   '/_auth/launch/': typeof AuthLaunchIndexRoute
   '/_auth/operator/': typeof AuthOperatorIndexRoute
   '/_auth/player/': typeof AuthPlayerIndexRoute
+  '/_auth/player/edit/$id': typeof AuthPlayerEditIdRoute
   '/_auth/player/show/$id': typeof AuthPlayerShowIdRoute
 }
 export interface FileRouteTypes {
@@ -112,6 +121,7 @@ export interface FileRouteTypes {
     | '/launch'
     | '/operator'
     | '/player'
+    | '/player/edit/$id'
     | '/player/show/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -122,6 +132,7 @@ export interface FileRouteTypes {
     | '/launch'
     | '/operator'
     | '/player'
+    | '/player/edit/$id'
     | '/player/show/$id'
   id:
     | '__root__'
@@ -134,6 +145,7 @@ export interface FileRouteTypes {
     | '/_auth/launch/'
     | '/_auth/operator/'
     | '/_auth/player/'
+    | '/_auth/player/edit/$id'
     | '/_auth/player/show/$id'
   fileRoutesById: FileRoutesById
 }
@@ -214,6 +226,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthPlayerShowIdRouteImport
       parentRoute: typeof AuthRouteRoute
     }
+    '/_auth/player/edit/$id': {
+      id: '/_auth/player/edit/$id'
+      path: '/player/edit/$id'
+      fullPath: '/player/edit/$id'
+      preLoaderRoute: typeof AuthPlayerEditIdRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
   }
 }
 
@@ -224,6 +243,7 @@ interface AuthRouteRouteChildren {
   AuthLaunchIndexRoute: typeof AuthLaunchIndexRoute
   AuthOperatorIndexRoute: typeof AuthOperatorIndexRoute
   AuthPlayerIndexRoute: typeof AuthPlayerIndexRoute
+  AuthPlayerEditIdRoute: typeof AuthPlayerEditIdRoute
   AuthPlayerShowIdRoute: typeof AuthPlayerShowIdRoute
 }
 
@@ -234,6 +254,7 @@ const AuthRouteRouteChildren: AuthRouteRouteChildren = {
   AuthLaunchIndexRoute: AuthLaunchIndexRoute,
   AuthOperatorIndexRoute: AuthOperatorIndexRoute,
   AuthPlayerIndexRoute: AuthPlayerIndexRoute,
+  AuthPlayerEditIdRoute: AuthPlayerEditIdRoute,
   AuthPlayerShowIdRoute: AuthPlayerShowIdRoute,
 }
 

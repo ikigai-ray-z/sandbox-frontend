@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import {
   CheckIcon,
   ChevronDownIcon,
@@ -24,22 +24,25 @@ import { useFieldContext } from './contexts'
 
 type SelectFieldProps = {
   multiple?: boolean
+  required?: boolean
   disabled?: boolean
-  loading: boolean
+  loading?: boolean
   label: string
   options: { value: string; label: string }[]
   onChange?: (value: string | string[] | undefined) => void
 }
 export function SelectField({
   multiple = false,
+  required = false,
   disabled = false,
-  loading,
+  loading = false,
   label,
   options,
   onChange,
 }: SelectFieldProps) {
   const [open, setOpen] = useState(false)
-  const field = useFieldContext<string | string[] | undefined>()
+  const id = useId()
+  const field = useFieldContext<string | string[] | null | undefined>()
   const fieldValue = field.state.value
 
   const hasValue = (() => {
@@ -85,29 +88,36 @@ export function SelectField({
     field.handleChange(value)
     setOpen(false)
   }
+
+  const onClear = () => {
+    field.handleChange(multiple ? [] : null)
+    setOpen(false)
+  }
   const onClearClick: React.MouseEventHandler<HTMLDivElement> = (e) => {
     e.stopPropagation()
-    field.clearValues()
-    setOpen(false)
+    onClear()
   }
   const onClearKeyDown: React.KeyboardEventHandler<HTMLDivElement> = (e) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.stopPropagation()
-      field.clearValues()
-      setOpen(false)
+      onClear()
     }
   }
 
   return (
     <Popover modal open={open} onOpenChange={setOpen}>
-      <div className="flex flex-col gap-2">
-        <Label>{label}</Label>
+      <div className="space-y-2">
+        <Label htmlFor={id}>
+          {label}
+          {required && <span className="text-destructive text-xs">*</span>}
+        </Label>
         <PopoverTrigger asChild>
           <Button
+            id={id}
             role="combobox"
             aria-expanded={open}
             variant="outline"
-            className="hover:bg-accent/20 h-auto gap-2 font-normal"
+            className="hover:bg-accent/20 h-auto w-full gap-2 font-normal"
             disabled={loading || disabled}
           >
             <div className="flex flex-1 flex-wrap gap-1">{getBadge()}</div>

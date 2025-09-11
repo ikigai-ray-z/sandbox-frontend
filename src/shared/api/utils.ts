@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 export function createApiResponseSchema<T extends z.ZodTypeAny>(schema: T) {
   return z.object({
-    error: z.any().nullable(),
+    error: z.null(),
     data: schema,
   })
 }
